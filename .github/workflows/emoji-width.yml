@@ -1,0 +1,28 @@
+name: Emoji width platform tests
+on:
+  push:
+    branches:
+      - ci/emoji-width
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            task: jvmTest
+          - os: macos-15
+            task: macosArm64Test
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: de602eb4df95517fcec502a2259f92dbc727c28d
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v6
+      - run: ./gradlew :mordant:${{ matrix.task }} --console=plain
